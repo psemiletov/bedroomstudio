@@ -202,8 +202,24 @@ inline void pan_equal_power3 (float &l, float& r, float p)
 }
 
 
-float warmify(float x, float warmth);
-float softLimit(float input);
+
+/*************** SATURATION/DIST/OVERDRIVE *******************/
+
+float gritty_guitar_distortion (float input_sample, float distortion_level);
+float warmify (float x, float warmth);
+
+
+
+/*************** FILTERS *******************/
+
+float hp_filter (float input, float samplerate, float fc);
+
+
+/*************** MISC *******************/
+
+
+float soft_limit (float input);
+float apply_resonance (float input, float resonance_amount);
 
 
 #endif

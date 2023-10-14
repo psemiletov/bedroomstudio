@@ -3,7 +3,7 @@ A set of LV2 plugins for bedroom music studio :) The idea is to provide simple, 
 
 Current plugins list:
 
-Metalluga - the distortion effect
+**Metalluga** - the distortion effect
 
 ## Build and install
 

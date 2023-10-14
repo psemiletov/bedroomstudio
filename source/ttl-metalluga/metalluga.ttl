@@ -84,17 +84,15 @@
 		a lv2:InputPort ,
 			lv2:ControlPort ;
 		lv2:index 4 ;
-		lv2:symbol "tone" ;
-		lv2:name "Tone" ,
-			"Тон"@ru ;
-		lv2:default 0.50 ;
+		lv2:symbol "weigth" ;
+		lv2:name "Weight" ,
+			"Тяжесть"@ru ;
+		lv2:default 0.68 ;
 		lv2:minimum 0.01 ;
 		lv2:maximum 0.99 ;
 		units:unit units:coef ;
 
-		]
-
-		,
+		],
 
 		[
 		a lv2:InputPort ,
@@ -108,6 +106,19 @@
 		lv2:maximum 0.99 ;
 		units:unit units:coef ;
 
-		]
-		.
+		],
+
+		[
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 6 ;
+		lv2:symbol "warmth" ;
+		lv2:name "Warmth" ,
+			"Теплота"@ru ;
+		lv2:default 0.50 ;
+		lv2:minimum 0.01 ;
+		lv2:maximum 0.99 ;
+		units:unit units:coef ;
+
+		].
 
