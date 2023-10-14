@@ -1,5 +1,5 @@
 # Bedroom Studio
-A set of LV2 plugins for bedroom music studio :)
+A set of LV2 plugins for bedroom music studio :) The idea is to provide simple, nice sounding effects those become a legend.
 
 Current plugins list:
 
