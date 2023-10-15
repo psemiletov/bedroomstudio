@@ -5,6 +5,9 @@ Current plugins list:
 
 **Metalluga** - the distortion effect
 
+**Charm** - the saturation effect, makes sound more "analog"
+
+
 ## Build and install
 
 **Dependencies:** cmake, lv2 library

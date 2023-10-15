@@ -31,6 +31,68 @@ Peter Semiletov, 2023
 #endif
 
 
+
+#include <cmath>
+#include <vector>
+#include <cmath>
+
+class ChorusEffect {
+public:
+
+      float sampleRate;
+
+
+    ChorusEffect(int initialDelayLineLength = 8820) {
+        sampleRate = 44100.0;
+        setDelayLineLength(initialDelayLineLength);
+        index = 0;
+        rate = 0.25;  // Частота "дрожания" (герц)
+        depth = 0.005;  // Сила "дрожания" (максимальное отклонение задержки)
+    }
+
+    // Установка параметров эффекта
+    void setParameters(float newRate, float newDepth) {
+        rate = newRate;
+        depth = newDepth;
+    }
+
+    // Установка длины задержки
+    void setDelayLineLength(int newLength) {
+        delayLineLength = newLength;
+        delayLine.resize(delayLineLength);
+    }
+
+    // Функция для обработки входного сэмпла
+    float process(float input) {
+        // Записываем входной сэмпл в задержку
+        delayLine[index] = input;
+
+        // Вычисляем текущую задержку, модулируя глубиной и частотой "дрожания"
+        float modulatedDelay = static_cast<float>(delayLineLength) / 2 * (1 + depth * sin(2 * M_PI * rate * index / sampleRate));
+
+        // Находим два ближайших индекса в задержке для интерполяции
+        int index1 = static_cast<int>(modulatedDelay);
+        int index2 = index1 + 1;
+        float fraction = modulatedDelay - index1;
+
+        // Линейная интерполяция между соседними сэмплами в задержке
+        float output = (1 - fraction) * delayLine[(index1 + delayLineLength) % delayLineLength] +
+                      fraction * delayLine[(index2 + delayLineLength) % delayLineLength];
+
+        // Обновляем индекс и возвращаем обработанный сэмпл
+        index = (index + 1) % delayLineLength;
+        return output;
+    }
+
+private:
+    int delayLineLength;
+    std::vector<float> delayLine;
+    int index;
+    float rate;
+    float depth;
+};
+
+
 extern float db_scale;
 
 inline float db2lin (float db)

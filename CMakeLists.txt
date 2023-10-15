@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
-project (metalluga VERSION 0.0.1 LANGUAGES CXX C)
+project (metalluga VERSION 0.0.2 LANGUAGES CXX C)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O2 ")
 
 
 option(USE_CLANG "Build with Clang" OFF)
@@ -36,12 +36,21 @@ add_library(metalluga SHARED
 )
 
 
+add_library(charm SHARED
+  ./source/dsp.cpp
+  ./source/dsp.h
+  ./source/charm.cpp
+)
+
+
 set_target_properties(metalluga  PROPERTIES PREFIX "")
 target_link_libraries(metalluga  ${LV2_LIBRARIES})
 
+set_target_properties(charm  PROPERTIES PREFIX "")
+target_link_libraries(charm  ${LV2_LIBRARIES})
 
 
-# config install
+# Metalluga install
 install(TARGETS metalluga
   LIBRARY
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/metalluga.lv2
@@ -49,5 +58,15 @@ install(TARGETS metalluga
 
 install (FILES ./source/ttl-metalluga/metalluga.ttl ./source/ttl-metalluga/manifest.ttl
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/metalluga.lv2
+)
+
+# Charm install
+install(TARGETS charm
+  LIBRARY
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/charm.lv2
+)
+
+install (FILES ./source/ttl-charm/charm.ttl ./source/ttl-charm/manifest.ttl
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/charm.lv2
 )
 

@@ -37,7 +37,7 @@ void init_db()
 /*************** SATURATION/DIST/OVERDRIVE *******************/
 
 
-// Функция для более "хриплого" гитарного искажения
+// Функция для "хриплого" гитарного искажения
 float gritty_guitar_distortion (float input_sample, float distortion_level)
 {
     // Шаг 1: Усиление с более высоким коэффициентом
