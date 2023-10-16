@@ -25,3 +25,7 @@ sudo make install
 ```
 yay -S bedroomstudio-git
 ```
+
+## Donate
+
+If you like this software, you can donate me to Paypal: peter.semiletov@gmail.com
