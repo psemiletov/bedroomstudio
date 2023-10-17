@@ -5,6 +5,8 @@ Current plugins list:
 
 **Metalluga** - the distortion effect. Mono input/output
 
+**Grelka** - the overdrive effect. Mono input/output
+
 **Charm** - the saturation effect, makes sound more "analog". Stereo input/output
 
 

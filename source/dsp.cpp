@@ -37,6 +37,27 @@ void init_db()
 /*************** SATURATION/DIST/OVERDRIVE *******************/
 
 
+
+float guitar_overdride (float input_sample, float distortion_level)
+{
+    // Шаг 1: Усиление с более высоким коэффициентом
+  float amplified_sample = input_sample * (1.5f + 4.0f * distortion_level);
+
+    // Шаг 2: Операционный усилитель с более высокой нелинейностью
+  float op_amp_output = atanh (2.0f * amplified_sample);
+
+    // Шаг 3: Клиппер/ограничитель с более сильным искажением
+  float clipped_sample = atanh (2.0f * op_amp_output);
+
+    // Ограничиваем значения в диапазоне от 0 до 1
+  //clipped_sample = std::min (1.0f, std::max (0.0f, clipped_sample));
+
+  clipped_sample = std::min(1.0f, std::max(-1.0f, clipped_sample));
+
+  return clipped_sample;
+}
+
+
 // Функция для "хриплого" гитарного искажения
 float gritty_guitar_distortion (float input_sample, float distortion_level)
 {

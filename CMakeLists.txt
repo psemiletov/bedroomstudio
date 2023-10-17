@@ -35,6 +35,16 @@ add_library(metalluga SHARED
   ./source/metalluga.cpp
 )
 
+add_library(grelka SHARED
+  ./source/dsp.cpp
+  ./source/dsp.h
+  ./source/fx-resofilter.h
+  ./source/fx-resofilter.cpp
+  ./source/grelka.cpp
+)
+
+
+
 
 add_library(charm SHARED
   ./source/dsp.cpp
@@ -45,6 +55,10 @@ add_library(charm SHARED
 
 set_target_properties(metalluga  PROPERTIES PREFIX "")
 target_link_libraries(metalluga  ${LV2_LIBRARIES})
+
+set_target_properties(grelka  PROPERTIES PREFIX "")
+target_link_libraries(grelka  ${LV2_LIBRARIES})
+
 
 set_target_properties(charm  PROPERTIES PREFIX "")
 target_link_libraries(charm  ${LV2_LIBRARIES})
@@ -59,6 +73,21 @@ install(TARGETS metalluga
 install (FILES ./source/ttl-metalluga/metalluga.ttl ./source/ttl-metalluga/manifest.ttl
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/metalluga.lv2
 )
+
+
+
+# Grelka install
+install(TARGETS grelka
+  LIBRARY
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/grelka.lv2
+)
+
+install (FILES ./source/ttl-grelka/grelka.ttl ./source/ttl-grelka/manifest.ttl
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/grelka.lv2
+)
+
+
+
 
 # Charm install
 install(TARGETS charm
