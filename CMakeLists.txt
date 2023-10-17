@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project (metalluga VERSION 0.0.2 LANGUAGES CXX C)
+project (metalluga VERSION 0.0.3 LANGUAGES CXX C)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")

@@ -50,7 +50,9 @@ float gritty_guitar_distortion (float input_sample, float distortion_level)
   float clipped_sample = tanh (2.0f * op_amp_output);
 
     // Ограничиваем значения в диапазоне от 0 до 1
-  clipped_sample = std::min (1.0f, std::max (0.0f, clipped_sample));
+  //clipped_sample = std::min (1.0f, std::max (0.0f, clipped_sample));
+
+  clipped_sample = std::min(1.0f, std::max(-1.0f, clipped_sample));
 
   return clipped_sample;
 }
