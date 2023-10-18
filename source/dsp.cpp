@@ -36,6 +36,60 @@ void init_db()
 
 /*************** SATURATION/DIST/OVERDRIVE *******************/
 
+#include <cmath>
+/*
+float fuzz (float input, float level, float intensity) {
+    // Применяем уровень искажения
+    input *= level;
+
+    // Применяем искажение с насыщением
+    float distortion = 0.0f;
+    float clipValue = 0.5f * intensity;
+
+    if (input > clipValue) {
+        distortion = clipValue;
+    } else if (input < -clipValue) {
+        distortion = -clipValue;
+    } else {
+        distortion = input;
+    }
+
+    // Применяем искажение к входному сигналу
+    input = distortion;
+
+    // Ограничиваем выходное значение в диапазоне от -1 до 1
+    if (input > 1.0f) {
+        input = 1.0f;
+    } else if (input < -1.0f) {
+        input = -1.0f;
+    }
+
+    return input;
+}
+*/
+
+float fuzz(float input, float level, float intensity) {
+    // Применяем искажение (фазовое искажение)
+    //float distorted = input + intensity * sin(input);
+
+   // Применяем более интенсивное искажение
+//    float distorted = input + intensity * sin(input * 5.0f);
+      float distorted = sin (input) + intensity * sin(input * 12.0f);
+
+    // Уровень выхода
+    distorted *= level;
+
+
+        // Ограничиваем выходное значение в диапазоне от -1 до 1
+    if (distorted > 1.0f) {
+        distorted = 1.0f;
+    } else if (distorted < -1.0f) {
+        distorted = -1.0f;
+    }
+
+
+   return distorted;
+}
 
 
 float guitar_overdride (float input_sample, float distortion_level)

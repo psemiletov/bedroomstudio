@@ -44,6 +44,14 @@ add_library(grelka SHARED
 )
 
 
+add_library(bronza SHARED
+  ./source/dsp.cpp
+  ./source/dsp.h
+  ./source/fx-resofilter.h
+  ./source/fx-resofilter.cpp
+  ./source/bronza.cpp
+)
+
 
 
 add_library(charm SHARED
@@ -59,9 +67,11 @@ target_link_libraries(metalluga  ${LV2_LIBRARIES})
 set_target_properties(grelka  PROPERTIES PREFIX "")
 target_link_libraries(grelka  ${LV2_LIBRARIES})
 
-
 set_target_properties(charm  PROPERTIES PREFIX "")
 target_link_libraries(charm  ${LV2_LIBRARIES})
+
+set_target_properties(bronza PROPERTIES PREFIX "")
+target_link_libraries(bronza ${LV2_LIBRARIES})
 
 
 # Metalluga install
@@ -86,6 +96,16 @@ install (FILES ./source/ttl-grelka/grelka.ttl ./source/ttl-grelka/manifest.ttl
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/grelka.lv2
 )
 
+
+# Metalluga install
+install(TARGETS bronza
+  LIBRARY
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/bronza.lv2
+)
+
+install (FILES ./source/ttl-bronza/bronza.ttl ./source/ttl-bronza/manifest.ttl
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/bronza.lv2
+)
 
 
 
