@@ -268,7 +268,7 @@ inline void pan_equal_power3 (float &l, float& r, float p)
 /*************** SATURATION/DIST/OVERDRIVE *******************/
 
 float fuzz (float input, float level, float intensity);
-float guitar_overdride (float input_sample, float distortion_level);
+float overdrive (float input, float drive, float level);
 float gritty_guitar_distortion (float input_sample, float distortion_level);
 float warmify (float x, float warmth);
 

@@ -127,13 +127,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
        float f = input[pos];
 
-
-    //   f = inst->hp_pre.process (f);
-       //f = hp_filter (f, inst->samplerate, 7.2f);
-
        f *= db2lin (*(inst->level));
-
-//     f = highPassFilter(f, inst->session_samplerate, 11.0f);
 
        f = gritty_guitar_distortion(f, *(inst->drive));
 

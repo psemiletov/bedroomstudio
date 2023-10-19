@@ -15,7 +15,7 @@
 
 #define GRELKA_URI "https://github.com/psemiletov/grelka"
 
-typedef enum { MTL_INPUT = 0, MTL_OUTPUT = 1, MTL_DRIVE = 2, MTL_LEVEL = 3, MTL_WEIGHT = 4, MTL_RESO = 5, MTL_WARMTH = 6} PortIndex;
+typedef enum { MTL_INPUT = 0, MTL_OUTPUT = 1, MTL_DRIVE = 2, MTL_LEVEL = 3, MTL_HPF = 4, MTL_LPF = 5} PortIndex;
 
 
 
@@ -27,15 +27,14 @@ public:
 
   //CResoFilter hp_pre;
 
-
-  CResoFilter lp;
   CResoFilter hp;
+  CResoFilter lp;
 
   const float* drive;
   const float* level;
-  const float* weight;
-  const float* reso;
-  const float* warmth;
+  const float* lpf;
+  const float* hpf;
+  //const float* warmth;
 
   const float* input;
   float *output;
@@ -70,7 +69,8 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CGrelka *instance = new CGrelka;
   instance->samplerate = rate;
-//  instance->hp_pre.set_cutoff ((float) 7.2f / rate);
+ // instance->lp.set_cutoff ((float) 14000.0f / rate);
+//  instance->hp.set_cutoff ((float) 200.0f / rate);
 
   return (LV2_Handle)instance;
 }
@@ -99,16 +99,12 @@ connect_port(LV2_Handle instance, uint32_t port, void* data)
                           inst->level = (const float*)data;
                           break;
 
-          case MTL_WEIGHT:
-                          inst->weight = (const float*)data;
+          case MTL_LPF:
+                          inst->lpf = (const float*)data;
                           break;
 
-          case MTL_RESO:
-                          inst->reso = (const float*)data;
-                          break;
-
-          case MTL_WARMTH:
-                          inst->warmth = (const float*)data;
+          case MTL_HPF:
+                          inst->hpf = (const float*)data;
                           break;
 
         }
@@ -123,30 +119,32 @@ run(LV2_Handle instance, uint32_t n_samples)
   const float* const input  = inst->input;
   float* const       output = inst->output;
 
+
+
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
+       inst->lp.set_cutoff ((float) *(inst->lpf) / inst->samplerate);
+       inst->hp.set_cutoff ((float) *(inst->hpf) / inst->samplerate);
+
 
        float f = input[pos];
 
-
-    //   f = inst->hp_pre.process (f);
-       //f = hp_filter (f, inst->samplerate, 7.2f);
-
-       f *= db2lin (*(inst->level));
-
-//     f = highPassFilter(f, inst->session_samplerate, 11.0f);
-
-       f = gritty_guitar_distortion(f, *(inst->drive));
-
-       inst->lp.set_cutoff (1 - *(inst->weight));
-       inst->hp.set_cutoff (1 - *(inst->weight));
-
-       f = inst->lp.process (f);
        f = inst->hp.process (f);
 
-       f = apply_resonance (f, *(inst->reso));
 
-       f = warmify (f, *(inst->warmth));
+
+       f = overdrive (f, *(inst->drive), db2lin (*(inst->level)));
+
+       f = inst->lp.process (f);
+
+       //inst->lp.set_cutoff (1 - *(inst->weight));
+
+//       inst->hp.set_cutoff (1 - *(inst->weight));
+
+
+       //f = apply_resonance (f, *(inst->reso));
+
+       //f = warmify (f, *(inst->warmth));
 
        output[pos] = f;
    }

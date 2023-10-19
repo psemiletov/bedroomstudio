@@ -85,7 +85,7 @@
 			lv2:ControlPort ;
 		lv2:index 4 ;
 		lv2:symbol "weigth" ;
-		lv2:name "Weight" ,
+		lv2:name "Weigth" ,
 			"Тяжесть"@ru ;
 		lv2:default 0.68 ;
 		lv2:minimum 0.01 ;
