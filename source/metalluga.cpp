@@ -25,9 +25,6 @@ public:
 
   int samplerate;
 
-  //CResoFilter hp_pre;
-
-
   CResoFilter lp;
   CResoFilter hp;
 
@@ -49,9 +46,6 @@ CMetalluga::CMetalluga()
   hp.mode = FILTER_MODE_HIGHPASS;
   lp.reset();
   hp.reset();
-  //hp_pre.mode = FILTER_MODE_HIGHPASS;
-
-//  hp_pre.reset();
 }
 
 
@@ -69,7 +63,6 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CMetalluga *instance = new CMetalluga;
   instance->samplerate = rate;
-//  instance->hp_pre.set_cutoff ((float) 7.2f / rate);
 
   return (LV2_Handle)instance;
 }
@@ -119,13 +112,13 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
   CMetalluga *inst = (CMetalluga*)instance;
 
-  const float* const input  = inst->input;
-  float* const       output = inst->output;
+  //const float* const input  = inst->input;
+  //float* const       output = inst->output;
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
 
-       float f = input[pos];
+       float f = inst->input[pos];
 
        f *= db2lin (*(inst->level));
 
@@ -141,7 +134,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
        f = warmify (f, *(inst->warmth));
 
-       output[pos] = f;
+       inst->output[pos] = f;
    }
 }
 

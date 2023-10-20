@@ -25,19 +25,13 @@ public:
 
   int samplerate;
 
-  //CResoFilter hp_pre;
-
   CResoFilter hp;
   CResoFilter lp;
-
-//  ButterworthLowPassFilter blp;
-
 
   const float* drive;
   const float* level;
   const float* lpf;
   const float* hpf;
-  //const float* warmth;
 
   const float* input;
   float *output;
@@ -51,10 +45,6 @@ CGrelka::CGrelka()
   hp.mode = FILTER_MODE_HIGHPASS;
   lp.reset();
   hp.reset();
-  //hp.set_resonance (0.50);
-  //hp_pre.mode = FILTER_MODE_HIGHPASS;
-
-//  hp_pre.reset();
 }
 
 
@@ -64,7 +54,7 @@ activate(LV2_Handle instance)
 
 
 static LV2_Handle
-instantiate(const LV2_Descriptor*     descriptor,
+instantiate (const LV2_Descriptor*     descriptor,
             double                    rate,
             const char*               bundle_path,
             const LV2_Feature* const* features)
@@ -72,14 +62,6 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CGrelka *instance = new CGrelka;
   instance->samplerate = rate;
-
-  //instance->blp.setSampleRate (rate);
-  //instance->blp.setCutoffFrequency (14000);
-  //instance->blp.calculateFilterCoefficients();
-
-
- // instance->lp.set_cutoff ((float) 14000.0f / rate);
-//  instance->hp.set_cutoff ((float) 200.0f / rate);
 
   return (LV2_Handle)instance;
 }
@@ -125,17 +107,12 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
   CGrelka *inst = (CGrelka*)instance;
 
-  //const float* const input  = inst->input;
-  //float* const       output = inst->output;
-
   inst->lp.set_cutoff ((float) *(inst->lpf) / inst->samplerate);
   inst->hp.set_cutoff ((float) *(inst->hpf) / inst->samplerate);
-
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
        float f = inst->input[pos];
-
 
        f = overdrive (f, *(inst->drive), db2lin (*(inst->level)));
 
@@ -143,7 +120,7 @@ run(LV2_Handle instance, uint32_t n_samples)
        f = inst->hp.process (f);
 
        inst->output[pos] = f;
-   }
+      }
 }
 
 
