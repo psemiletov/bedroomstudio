@@ -108,63 +108,6 @@ connect_port(LV2_Handle instance, uint32_t port, void* data)
 }
 
 
-float exponentialFuzz(float inputSample, float level, float distortion) {
-    // Применяем экспоненциальное искажение
-    float distortedSample = exp(distortion * inputSample);
-
-    // Умножаем на уровень для настройки громкости
-    float outputSample = distortedSample * level;
-
-    return outputSample;
-}
-
-
-
-float velvetFuzz(float inputSample, float level, float distortion) {
-    // Этап 1: Гиперболическое искажение
-    float hyperbolicSample = tanh(inputSample * distortion);
-
-    // Этап 2: Насыщение
-    float saturatedSample = hyperbolicSample * 0.7f;  // Уменьшаем амплитуду для насыщения
-
-    // Этап 3: Применение "бархатности"
-    float velvetSample = saturatedSample * (1.0f - 0.3f * fabs(saturatedSample));
-
-    // Умножаем на уровень для настройки громкости
-    float outputSample = velvetSample * level;
-
-      if (outputSample > 1.0f) {
-        outputSample = 1.0f;
-    } else if (outputSample < -1.0f) {
-        outputSample = -1.0f;
-    }
-
-    return outputSample;
-}
-
-
-float jimiFuzz(float inputSample, float level, float distortion) {
-    // Этап 1: Гиперболическое искажение
-    float hyperbolicSample = tanh(inputSample * distortion);
-
-    // Этап 2: Насыщение
-    float saturatedSample = hyperbolicSample * 0.7f;  // Уменьшаем амплитуду для насыщения
-
-    // Этап 3: Применение "ламповости"
-    float lampSample = (1.0f - expf(-fabs(saturatedSample))) * (saturatedSample >= 0 ? 1 : -1);
-
-    // Умножаем на уровень для настройки громкости
-    float outputSample = lampSample * level;
-
-      if (outputSample > 1.0f) {
-        outputSample = 1.0f;
-    } else if (outputSample < -1.0f) {
-        outputSample = -1.0f;
-    }
-
-    return outputSample;
-}
-
 
 static void
 run(LV2_Handle instance, uint32_t n_samples)
@@ -185,17 +128,18 @@ run(LV2_Handle instance, uint32_t n_samples)
 
       // f = fuzz (f, db2lin (*(inst->level)), *(inst->intensity));
 
-       f = jimiFuzz (f, db2lin (*(inst->level)), *(inst->intensity));
+       f = jimi_fuzz (f, db2lin (*(inst->level)), *(inst->intensity));
 
 
        f = inst->lp.process (f);
        f = inst->hp.process (f);
 
-       if (f > 1.0f) {
-        f = 1.0f;
-    } else if (f < -1.0f) {
-        f = -1.0f;
-    }
+       if (f > 1.0f)
+           f = 1.0f;
+       else
+           if (f < -1.0f)
+              f = -1.0f;
+
 
 
        inst->output[pos] = f;

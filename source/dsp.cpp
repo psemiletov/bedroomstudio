@@ -39,15 +39,35 @@ void init_db()
 #include <cmath>
 
 
+
+float jimi_fuzz (float input_sample, float level, float distortion)
+{
+  // Этап 1: Гиперболическое искажение
+  float hyperbolic_sample = tanh (input_sample * distortion);
+
+    // Этап 2: Насыщение
+  float saturated_sample = hyperbolic_sample * 0.7f;  // Уменьшаем амплитуду для насыщения
+
+    // Этап 3: Применение "ламповости"
+  float lamp_sample = (1.0f - expf(-fabs (saturated_sample))) * (saturated_sample >= 0 ? 1 : -1);
+
+    // Умножаем на уровень для настройки громкости
+  float output_sample = lamp_sample * level;
+
+  if (output_sample > 1.0f)
+      output_sample = 1.0f;
+  else
+      if (output_sample < -1.0f)
+         output_sample = -1.0f;
+
+
+  return output_sample;
+}
+
+/*
 float fuzz (float input, float level, float intensity)
 {
-    // Применяем искажение (фазовое искажение)
-    //float distorted = input + intensity * sin(input);
-
-   // Применяем более интенсивное искажение
     float distorted = sin (input) + intensity * sin (input * 12.0f);
-//     float distorted = tan (input) + intensity * sin (input * 12.0f);
-
 
     // Уровень выхода
     distorted *= level;
@@ -66,29 +86,28 @@ float fuzz (float input, float level, float intensity)
 
    return distorted;
 }
+*/
 
-
-float overdrive(float input, float drive, float level)
+float overdrive (float input, float drive, float level)
 {
 //    float output = std::sin(input * 2.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
-   float output = std::atan (input * 3.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
+  float output = std::atan (input * 3.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
 
-   output *= drive; // Уровень искажения зависит от параметра drive
+  output *= drive; // Уровень искажения зависит от параметра drive
 
-    // Применяем предварительное усиление
-    output *= level;
+   // Применяем предварительное усиление
+  output *= level;
 
-    //if (output > 1.0f || output < -1.0f)
-      // output /= 3;
 
-    // Ограничиваем выходное значение в пределах [-1, 1]
-    if (output > 1.0f) {
-        output = 1.0f;
-    } else if (output < -1.0f) {
-        output = -1.0f;
-    }
+  // Ограничиваем выходное значение в пределах [-1, 1]
+  if (output > 1.0f)
+      output = 1.0f;
+  else
+      if (output < -1.0f)
+         output = -1.0f;
 
-    return output;
+
+  return output;
 }
 
 
@@ -104,14 +123,10 @@ float gritty_guitar_distortion (float input_sample, float distortion_level)
     // Шаг 3: Клиппер/ограничитель с более сильным искажением
   float clipped_sample = tanh (2.0f * op_amp_output);
 
-    // Ограничиваем значения в диапазоне от 0 до 1
-  //clipped_sample = std::min (1.0f, std::max (0.0f, clipped_sample));
-
   clipped_sample = std::min(1.0f, std::max(-1.0f, clipped_sample));
 
   return clipped_sample;
 }
-
 
 
 //analog

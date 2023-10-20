@@ -30,7 +30,7 @@ public:
   CResoFilter hp;
   CResoFilter lp;
 
-  ButterworthLowPassFilter blp;
+//  ButterworthLowPassFilter blp;
 
 
   const float* drive;
@@ -73,9 +73,9 @@ instantiate(const LV2_Descriptor*     descriptor,
   CGrelka *instance = new CGrelka;
   instance->samplerate = rate;
 
-  instance->blp.setSampleRate (rate);
-  instance->blp.setCutoffFrequency (14000);
-  instance->blp.calculateFilterCoefficients();
+  //instance->blp.setSampleRate (rate);
+  //instance->blp.setCutoffFrequency (14000);
+  //instance->blp.calculateFilterCoefficients();
 
 
  // instance->lp.set_cutoff ((float) 14000.0f / rate);
