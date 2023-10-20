@@ -15,7 +15,7 @@
 
 #define BRONZA_URI "https://github.com/psemiletov/bronza"
 
-typedef enum { MTL_INPUT = 0, MTL_OUTPUT = 1, MTL_LEVEL = 2, MTL_INTENSITY = 3, MTL_WEIGHT = 4} PortIndex;
+typedef enum { MTL_INPUT = 0, MTL_OUTPUT = 1, MTL_LEVEL = 2, MTL_FUZZ = 3} PortIndex;
 
 
 
@@ -33,9 +33,6 @@ public:
 
   const float* level;
   const float* intensity;
-  const float* weight;
-  const float* reso;
-  const float* warmth;
 
   const float* input;
   float *output;
@@ -76,7 +73,8 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CBronza *instance = new CBronza;
   instance->samplerate = rate;
-  instance->bhp.set_cutoff ( (float) 100 / rate);
+  instance->lp.set_cutoff ( 12000 / rate);
+  instance->hp.set_cutoff ( 500 / rate);
 
   return (LV2_Handle)instance;
 }
@@ -101,15 +99,70 @@ connect_port(LV2_Handle instance, uint32_t port, void* data)
                           inst->level = (const float*)data;
                           break;
 
-          case MTL_INTENSITY:
+          case MTL_FUZZ:
                           inst->intensity = (const float*)data;
                           break;
 
-          case MTL_WEIGHT:
-                          inst->weight = (const float*)data;
-                          break;
 
         }
+}
+
+
+float exponentialFuzz(float inputSample, float level, float distortion) {
+    // Применяем экспоненциальное искажение
+    float distortedSample = exp(distortion * inputSample);
+
+    // Умножаем на уровень для настройки громкости
+    float outputSample = distortedSample * level;
+
+    return outputSample;
+}
+
+
+
+float velvetFuzz(float inputSample, float level, float distortion) {
+    // Этап 1: Гиперболическое искажение
+    float hyperbolicSample = tanh(inputSample * distortion);
+
+    // Этап 2: Насыщение
+    float saturatedSample = hyperbolicSample * 0.7f;  // Уменьшаем амплитуду для насыщения
+
+    // Этап 3: Применение "бархатности"
+    float velvetSample = saturatedSample * (1.0f - 0.3f * fabs(saturatedSample));
+
+    // Умножаем на уровень для настройки громкости
+    float outputSample = velvetSample * level;
+
+      if (outputSample > 1.0f) {
+        outputSample = 1.0f;
+    } else if (outputSample < -1.0f) {
+        outputSample = -1.0f;
+    }
+
+    return outputSample;
+}
+
+
+float jimiFuzz(float inputSample, float level, float distortion) {
+    // Этап 1: Гиперболическое искажение
+    float hyperbolicSample = tanh(inputSample * distortion);
+
+    // Этап 2: Насыщение
+    float saturatedSample = hyperbolicSample * 0.7f;  // Уменьшаем амплитуду для насыщения
+
+    // Этап 3: Применение "ламповости"
+    float lampSample = (1.0f - expf(-fabs(saturatedSample))) * (saturatedSample >= 0 ? 1 : -1);
+
+    // Умножаем на уровень для настройки громкости
+    float outputSample = lampSample * level;
+
+      if (outputSample > 1.0f) {
+        outputSample = 1.0f;
+    } else if (outputSample < -1.0f) {
+        outputSample = -1.0f;
+    }
+
+    return outputSample;
 }
 
 
@@ -120,21 +173,29 @@ run(LV2_Handle instance, uint32_t n_samples)
 
 //  inst->bhp.set_cutoff ( (float) 40 / inst->samplerate);
 
-  inst->hp.set_cutoff (0.50f - *(inst->weight));
+//  inst->hp.set_cutoff (0.50f - *(inst->weight));
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
-
-
        float f = inst->input[pos];
 
 
+     //  f = inst->hp.process (f);
+
+
+      // f = fuzz (f, db2lin (*(inst->level)), *(inst->intensity));
+
+       f = jimiFuzz (f, db2lin (*(inst->level)), *(inst->intensity));
+
+
+       f = inst->lp.process (f);
        f = inst->hp.process (f);
 
-
-       f = fuzz (f, db2lin (*(inst->level)), *(inst->intensity));
-
-      //f = inst->bhp.process (f);
+       if (f > 1.0f) {
+        f = 1.0f;
+    } else if (f < -1.0f) {
+        f = -1.0f;
+    }
 
 
        inst->output[pos] = f;
