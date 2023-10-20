@@ -25,9 +25,6 @@ public:
 
   int samplerate;
 
-  //CResoFilter hp_pre;
-
-
   CResoFilter lp;
   CResoFilter hp;
   CResoFilter bp;
@@ -47,12 +44,12 @@ public:
 
 CBronza::CBronza()
 {
-  hp.mode = FILTER_MODE_HIGHPASS;
   lp.reset();
 
   bp.mode = FILTER_MODE_BANDPASS;
   bp.reset();
 
+  hp.mode = FILTER_MODE_HIGHPASS;
   hp.reset();
   hp.set_cutoff (0.50);
 }
@@ -72,10 +69,6 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CBronza *instance = new CBronza;
   instance->samplerate = rate;
-
-
-  //instance->lp.set_cutoff ((float) 3000.f / rate);
-
   return (LV2_Handle)instance;
 }
 
@@ -116,19 +109,19 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
   CBronza *inst = (CBronza*)instance;
 
-  const float* const input  = inst->input;
-  float* const       output = inst->output;
+//  const float* const input  = inst->input;
+//  float* const       output = inst->output;
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
 
-       float f = input[pos];
+       float f = inst->input[pos];
        inst->hp.set_cutoff (0.50f - *(inst->weight));
 
        f = inst->hp.process (f);
        f = fuzz (f, db2lin (*(inst->level)), *(inst->intensity));
 
-       output[pos] = f;
+       inst->output[pos] = f;
    }
 }
 

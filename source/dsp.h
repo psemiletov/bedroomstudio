@@ -36,6 +36,197 @@ Peter Semiletov, 2023
 #include <vector>
 #include <cmath>
 
+
+class ButterworthLowPassFilter {
+public:
+    int order;
+    float sampleRate;
+    float cutoffFrequency;
+    float previousCutoffFrequency;
+    std::vector<float> aCoefficients;
+    std::vector<float> bCoefficients;
+    float inputBuffer;
+    float outputBuffer;
+
+    ButterworthLowPassFilter() {
+        order = 2;
+        sampleRate = 48000;
+        cutoffFrequency = 14000;
+        previousCutoffFrequency = 1;
+        //outputBuffer = 1;
+        calculateFilterCoefficients();
+
+    }
+
+
+    float process(float inputSample) {
+        if (cutoffFrequency != previousCutoffFrequency) {
+            calculateFilterCoefficients();
+            previousCutoffFrequency = cutoffFrequency;
+        }
+
+        float outputSample = aCoefficients[0] * inputSample + inputBuffer;
+
+        for (int i = 1; i <= order; i++) {
+            outputSample += aCoefficients[i] * inputBuffer - bCoefficients[i] * outputBuffer;
+        }
+
+        inputBuffer = inputSample;
+        outputBuffer = outputSample;
+
+        return outputSample;
+    }
+
+    void setCutoffFrequency(float newCutoffFrequency) {
+        cutoffFrequency = newCutoffFrequency;
+    }
+
+    void setSampleRate(float newSampleRate) {
+        sampleRate = newSampleRate;
+        calculateFilterCoefficients();
+    }
+
+    void calculateFilterCoefficients() {
+        aCoefficients.resize(order + 1, 0.0f);
+        bCoefficients.resize(order + 1, 0.0f);
+
+        float wc = 2.0f * M_PI * cutoffFrequency / sampleRate;
+        float tanwc2 = tanf(wc / 2.0f);
+
+        if (std::isnan(tanwc2) || std::isinf(tanwc2)) {
+            // Обработка некорректных значений wc
+            return;
+        }
+
+        for (int i = 0; i <= order; i++) {
+            aCoefficients[i] = comb(order, i) * powf(tanwc2, order - i);
+            bCoefficients[i] = comb(order, i) * powf(tanwc2, i);
+        }
+    }
+
+    float comb(int n, int k) {
+        if (k == 0) return 1.0f;
+        if (k < 0 || k > n) return 0.0f;
+
+        float result = 1.0f;
+        for (int i = 1; i <= k; i++) {
+            result *= (static_cast<float>(n - i + 1) / static_cast<float>(i));
+        }
+        return result;
+    }
+};
+
+
+/*
+
+class ButterworthLowPassFilter {
+public:
+
+  int order;
+    float sampleRate;
+    float cutoffFrequency;
+    float previousCutoffFrequency;  // Для отслеживания изменений частоты среза
+    std::vector<float> aCoefficients;
+    std::vector<float> bCoefficients;
+    std::deque<float> inputBuffer;
+    std::deque<float> outputBuffer;
+
+
+    ButterworthLowPassFilter()
+        {
+         order = 2;
+         sampleRate = 48000;
+         cutoffFrequency = 14000;
+         previousCutoffFrequency = 1;
+
+         calculateFilterCoefficients();
+
+
+
+        inputBuffer.resize(order + 1, 0.0f);
+        outputBuffer.resize(order + 1, 0.0f);
+    }
+
+    float process(float inputSample) {
+
+        if (cutoffFrequency != previousCutoffFrequency) {
+            calculateFilterCoefficients();
+            previousCutoffFrequency = cutoffFrequency;
+        }
+
+        inputBuffer.push_back(inputSample);
+        inputBuffer.pop_front();
+
+        float outputSample = 0.0f;
+        for (int i = 0; i <= order; i++) {
+            outputSample += aCoefficients[i] * inputBuffer[i];
+
+           // std::cout << "i=" << i << " outputSample=" << outputSample << std::endl;
+
+            outputSample -= bCoefficients[i] * outputBuffer[i];
+        }
+
+        outputBuffer.push_back(outputSample);
+        outputBuffer.pop_front();
+
+        return outputSample;
+    }
+
+    void setCutoffFrequency(float newCutoffFrequency) {
+        cutoffFrequency = newCutoffFrequency;
+    }
+
+    void setSampleRate(float newSampleRate) {
+        sampleRate = newSampleRate;
+    }
+
+
+    void calculateFilterCoefficients() {
+        aCoefficients.resize(order + 1, 0.0f);
+        bCoefficients.resize(order + 1, 0.0f);
+
+        float wc = 2.0f * M_PI * cutoffFrequency / sampleRate;
+
+//                std::cout << "wc:" << wc <<  std::endl;
+
+        float tanwc2 = tanf(wc / 2.0f);
+
+  //                      std::cout << "tanwc2:" << tanwc2 <<  std::endl;
+
+
+          if (std::isnan(tanwc2) || std::isinf(tanwc2)) {
+
+        // Обработка некорректных значений wc
+        // Может включать в себя установку коэффициентов в значения по умолчанию или другие допустимые значения.
+        return;
+    }
+
+        for (int i = 0; i <= order; i++) {
+            aCoefficients[i] = comb(order, i) * powf(tanwc2, order - i);
+
+//             std::cout << "aCoefficients[i]:" << aCoefficients[i] <<  std::endl;
+
+
+            bCoefficients[i] = comb(order, i) * powf(tanwc2, i);
+
+  //          std::cout << "bCoefficients[i]:" << bCoefficients[i] <<  std::endl;
+
+        }
+    }
+
+    float comb(int n, int k) {
+        if (k == 0) return 1.0f;
+        if (k < 0 || k > n) return 0.0f;
+
+        float result = 1.0f;
+        for (int i = 1; i <= k; i++) {
+            result *= (static_cast<float>(n - i + 1) / static_cast<float>(i));
+        }
+        return result;
+    }
+};
+*/
+
 class ChorusEffect {
 public:
 

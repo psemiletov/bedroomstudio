@@ -37,44 +37,16 @@ void init_db()
 /*************** SATURATION/DIST/OVERDRIVE *******************/
 
 #include <cmath>
-/*
-float fuzz (float input, float level, float intensity) {
-    // Применяем уровень искажения
-    input *= level;
 
-    // Применяем искажение с насыщением
-    float distortion = 0.0f;
-    float clipValue = 0.5f * intensity;
-
-    if (input > clipValue) {
-        distortion = clipValue;
-    } else if (input < -clipValue) {
-        distortion = -clipValue;
-    } else {
-        distortion = input;
-    }
-
-    // Применяем искажение к входному сигналу
-    input = distortion;
-
-    // Ограничиваем выходное значение в диапазоне от -1 до 1
-    if (input > 1.0f) {
-        input = 1.0f;
-    } else if (input < -1.0f) {
-        input = -1.0f;
-    }
-
-    return input;
-}
-*/
 
 float fuzz(float input, float level, float intensity) {
     // Применяем искажение (фазовое искажение)
     //float distorted = input + intensity * sin(input);
 
    // Применяем более интенсивное искажение
-//    float distorted = input + intensity * sin(input * 5.0f);
-      float distorted = sin (input) + intensity * sin(input * 12.0f);
+    float distorted = sin (input) + intensity * sin (input * 12.0f);
+//     float distorted = tan (input) + intensity * sin (input * 12.0f);
+
 
     // Уровень выхода
     distorted *= level;
@@ -92,13 +64,18 @@ float fuzz(float input, float level, float intensity) {
 }
 
 
-float overdrive(float input, float drive, float level) {
-    // Применяем overdrive-эффект
-    float output = std::sin(input * 2.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
-    output *= drive; // Уровень искажения зависит от параметра drive
+float overdrive(float input, float drive, float level)
+{
+//    float output = std::sin(input * 2.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
+   float output = std::atan (input * 3.0f * 3.14159265359f); // Примерный алгоритм, можно настроить под нужное звучание
+
+   output *= drive; // Уровень искажения зависит от параметра drive
 
     // Применяем предварительное усиление
     output *= level;
+
+    //if (output > 1.0f || output < -1.0f)
+      // output /= 3;
 
     // Ограничиваем выходное значение в пределах [-1, 1]
     if (output > 1.0f) {

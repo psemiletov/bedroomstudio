@@ -30,6 +30,9 @@ public:
   CResoFilter hp;
   CResoFilter lp;
 
+  ButterworthLowPassFilter blp;
+
+
   const float* drive;
   const float* level;
   const float* lpf;
@@ -69,6 +72,12 @@ instantiate(const LV2_Descriptor*     descriptor,
   init_db();
   CGrelka *instance = new CGrelka;
   instance->samplerate = rate;
+
+  instance->blp.setSampleRate (rate);
+  instance->blp.setCutoffFrequency (14000);
+  instance->blp.calculateFilterCoefficients();
+
+
  // instance->lp.set_cutoff ((float) 14000.0f / rate);
 //  instance->hp.set_cutoff ((float) 200.0f / rate);
 
@@ -116,37 +125,24 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
   CGrelka *inst = (CGrelka*)instance;
 
-  const float* const input  = inst->input;
-  float* const       output = inst->output;
+  //const float* const input  = inst->input;
+  //float* const       output = inst->output;
 
+  inst->lp.set_cutoff ((float) *(inst->lpf) / inst->samplerate);
+  inst->hp.set_cutoff ((float) *(inst->hpf) / inst->samplerate);
 
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
-       inst->lp.set_cutoff ((float) *(inst->lpf) / inst->samplerate);
-       inst->hp.set_cutoff ((float) *(inst->hpf) / inst->samplerate);
-
-
-       float f = input[pos];
-
-       f = inst->hp.process (f);
-
+       float f = inst->input[pos];
 
 
        f = overdrive (f, *(inst->drive), db2lin (*(inst->level)));
 
        f = inst->lp.process (f);
+       f = inst->hp.process (f);
 
-       //inst->lp.set_cutoff (1 - *(inst->weight));
-
-//       inst->hp.set_cutoff (1 - *(inst->weight));
-
-
-       //f = apply_resonance (f, *(inst->reso));
-
-       //f = warmify (f, *(inst->warmth));
-
-       output[pos] = f;
+       inst->output[pos] = f;
    }
 }
 
