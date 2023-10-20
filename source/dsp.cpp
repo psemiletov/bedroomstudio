@@ -39,7 +39,8 @@ void init_db()
 #include <cmath>
 
 
-float fuzz(float input, float level, float intensity) {
+float fuzz (float input, float level, float intensity)
+{
     // Применяем искажение (фазовое искажение)
     //float distorted = input + intensity * sin(input);
 
@@ -51,6 +52,9 @@ float fuzz(float input, float level, float intensity) {
     // Уровень выхода
     distorted *= level;
 
+
+    if (distorted > 1.0f || distorted < -1.0f)
+       distorted /= 2;
 
         // Ограничиваем выходное значение в диапазоне от -1 до 1
     if (distorted > 1.0f) {

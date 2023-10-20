@@ -13,7 +13,7 @@
 #include "dsp.h"
 #include "fx-resofilter.h"
 
-#define METALLUGA_URI "https://github.com/psemiletov/charm"
+#define CHARM_URI "https://github.com/psemiletov/charm"
 
 typedef enum { PORT_IN_LEFT = 0, PORT_IN_RIGHT = 1, PORT_OUT_LEFT = 2, PORT_OUT_RIGHT = 3, PORT_CHARM = 4} PortIndex;
 
@@ -25,18 +25,14 @@ public:
 
   int samplerate;
 
-
-  const float* charm;
+  const float* charm; //warmth factor
 
   const float* input_l;
   const float* input_r;
 
   float *output_l;
   float *output_r;
-
-  //CCharm();
 };
-
 
 
 
@@ -46,7 +42,7 @@ activate(LV2_Handle instance)
 
 
 static LV2_Handle
-instantiate(const LV2_Descriptor*     descriptor,
+instantiate (const LV2_Descriptor*    descriptor,
             double                    rate,
             const char*               bundle_path,
             const LV2_Feature* const* features)
@@ -60,11 +56,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 
 
 static void
-connect_port(LV2_Handle instance, uint32_t port, void* data)
+connect_port (LV2_Handle instance, uint32_t port, void* data)
 {
-  CCharm *inst = (CCharm*)instance;
+  CCharm *inst = (CCharm*) instance;
 
-  switch ((PortIndex)port)
+  switch ((PortIndex) port)
          {
           case PORT_IN_LEFT:
                           inst->input_l = (const float*)data;
@@ -86,18 +82,14 @@ connect_port(LV2_Handle instance, uint32_t port, void* data)
                           inst->charm = (const float*)data;
                           break;
 
-
         }
 }
 
 
 static void
-run(LV2_Handle instance, uint32_t n_samples)
+run (LV2_Handle instance, uint32_t n_samples)
 {
-  CCharm *inst = (CCharm*)instance;
-
-  //const float* const input  = inst->input;
-  //float* const       output = inst->output;
+  CCharm *inst = (CCharm*) instance;
 
   for (uint32_t pos = 0; pos < n_samples; pos++)
       {
@@ -120,7 +112,7 @@ static void deactivate (LV2_Handle instance)
 
 static void cleanup(LV2_Handle instance)
 {
-  delete (CCharm*)instance;
+  delete (CCharm*) instance;
 }
 
 
@@ -130,7 +122,7 @@ static const void* extension_data (const char* uri)
 }
 
 
-static const LV2_Descriptor descriptor = {METALLUGA_URI,
+static const LV2_Descriptor descriptor = {CHARM_URI,
                                           instantiate,
                                           connect_port,
                                           activate,
