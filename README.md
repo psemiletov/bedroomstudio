@@ -1,7 +1,7 @@
 # Bedroom Studio by Peter Semiletov
 A set of LV2 plugins for bedroom music studio :) The idea is to provide simple, nice sounding effects those become a legend.
 
-https://psemiletov.github.io/drumlabooh/
+https://psemiletov.github.io/bedroomstudio/
 
 Current plugins list:
 
