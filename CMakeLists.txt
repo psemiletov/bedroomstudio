@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project (metalluga VERSION 0.0.3 LANGUAGES CXX C)
+project (bedroomstudio VERSION 1.0.0 LANGUAGES CXX C)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
@@ -10,7 +10,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O2 ")
 option(USE_CLANG "Build with Clang" OFF)
 
 
-add_definitions ( -DPIC )
+#add_definitions ( -DPIC )
 
 if(USE_CLANG)
   set(CMAKE_CXX_COMPILER clang++)
@@ -53,7 +53,6 @@ add_library(bronza SHARED
 )
 
 
-
 add_library(charm SHARED
   ./source/dsp.cpp
   ./source/dsp.h
@@ -85,7 +84,6 @@ install (FILES ./source/ttl-metalluga/metalluga.ttl ./source/ttl-metalluga/manif
 )
 
 
-
 # Grelka install
 install(TARGETS grelka
   LIBRARY
@@ -106,7 +104,6 @@ install(TARGETS bronza
 install (FILES ./source/ttl-bronza/bronza.ttl ./source/ttl-bronza/manifest.ttl
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/bronza.lv2
 )
-
 
 
 # Charm install

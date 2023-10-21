@@ -1,15 +1,17 @@
-# Bedroom Studio
+# Bedroom Studio by Peter Semiletov
 A set of LV2 plugins for bedroom music studio :) The idea is to provide simple, nice sounding effects those become a legend.
+
+https://psemiletov.github.io/drumlabooh/
 
 Current plugins list:
 
-**Metalluga** - the distortion effect. Mono input/output
+**Metalluga** - the hard and crips distortion with five controls to customize the effect for your needs: Drive, Level, Weigth, Resonance and Warmth. The main control here is Level, all other builds around it. If don't touch too much the distortion stuff, you can use Metalluga in more soft genres such as blues.
 
-**Bronza** - the fuzz effect. Mono input/output
+**Bronza** -  the plain fuzz pedal with two parameters - *Level* and *Fuzz*. Sounds like in sixties
 
-**Grelka** - the overdrive effect. Mono input/output
+**Grelka Overdrive** - the classic overdrive, has Drive, Level, Lows and Treble parameters to define the sound.
 
-**Charm** - the saturation effect, makes sound more "analog". Stereo input/output
+**Charm** - the saturation effect, makes sound more "analog". 
 
 
 ## Build and install
@@ -27,7 +29,7 @@ sudo make install
 **To install from AUR**
 
 ```
-yay -S bedroomstudio-git
+yay -S bedroomstudio
 ```
 
 ## Donate
