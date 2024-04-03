@@ -60,6 +60,19 @@ add_library(charm SHARED
 )
 
 
+add_library(flanger SHARED
+  ./source/dsp.cpp
+  ./source/dsp.h
+  ./source/flanger.cpp
+)
+
+add_library(eq SHARED
+  ./source/dsp.cpp
+  ./source/dsp.h
+  ./source/eq.cpp
+)
+
+
 set_target_properties(metalluga  PROPERTIES PREFIX "")
 target_link_libraries(metalluga  ${LV2_LIBRARIES})
 
@@ -71,6 +84,13 @@ target_link_libraries(charm  ${LV2_LIBRARIES})
 
 set_target_properties(bronza PROPERTIES PREFIX "")
 target_link_libraries(bronza ${LV2_LIBRARIES})
+
+set_target_properties(flanger PROPERTIES PREFIX "")
+target_link_libraries(flanger ${LV2_LIBRARIES})
+
+set_target_properties(eq PROPERTIES PREFIX "")
+target_link_libraries(eq ${LV2_LIBRARIES})
+
 
 
 # Metalluga install
@@ -114,5 +134,29 @@ install(TARGETS charm
 
 install (FILES ./source/ttl-charm/charm.ttl ./source/ttl-charm/manifest.ttl
   DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/charm.lv2
+)
+
+
+
+# Charm install
+install(TARGETS flanger
+  LIBRARY
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/flanger.lv2
+)
+
+install (FILES ./source/ttl-flanger/flanger.ttl ./source/ttl-flanger/manifest.ttl
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/flanger.lv2
+)
+
+
+
+# Charm install
+install(TARGETS eq
+  LIBRARY
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/eq.lv2
+)
+
+install (FILES ./source/ttl-eq/eq.ttl ./source/ttl-eq/manifest.ttl
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/eq.lv2
 )
 

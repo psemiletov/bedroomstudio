@@ -31,10 +31,316 @@ Peter Semiletov, 2023
 #endif
 
 
+#include <cmath>
 
-#include <cmath>
-#include <vector>
-#include <cmath>
+class BaxandallEqualizer {
+public:
+    float lowGain;   // Уровень нижней полосы (-90 до +6 dB)
+    float midGain;   // Уровень средней полосы (-90 до +6 dB)
+    float highGain;  // Уровень верхней полосы (-90 до +6 dB)
+    float lowFrequency;  // Частота нижней полосы (Гц)
+    float highFrequency; // Частота верхней полосы (Гц)
+
+    BaxandallEqualizer() : lowGain(0), midGain(0), highGain(0), lowFrequency(100), highFrequency(10000) {
+        recalculateCoeffs();
+    }
+
+    void setSampleRate(float newSampleRate) {
+        sampleRate = newSampleRate;
+        recalculateCoeffs();
+    }
+
+    void setLowGain(float gain) {
+        lowGain = gain;
+        recalculateCoeffs();
+    }
+
+    void setMidGain(float gain) {
+        midGain = gain;
+        recalculateCoeffs();
+    }
+
+    void setHighGain(float gain) {
+        highGain = gain;
+        recalculateCoeffs();
+    }
+
+    float process(float inputSample) {
+        // Применение эквалайзера
+        float lowFiltered = lowCoeff * inputSample;
+        float midFiltered = midCoeff * inputSample;
+        float highFiltered = highCoeff * inputSample;
+
+        // Выходное значение - комбинация трех полос
+        return lowFiltered + midFiltered + highFiltered;
+    }
+
+    void recalculateCoeffs() {
+        // Расчет коэффициентов для фильтрации
+        float lowGainLinear = pow(10.0f, lowGain / 20.0f);
+        float midGainLinear = pow(10.0f, midGain / 20.0f);
+        float highGainLinear = pow(10.0f, highGain / 20.0f);
+
+        lowCoeff = calculateCoeff(lowFrequency);
+        midCoeff = calculateCoeff((lowFrequency + highFrequency) / 2.0f);
+        highCoeff = calculateCoeff(highFrequency);
+
+        lowCoeff *= lowGainLinear;
+        midCoeff *= midGainLinear;
+        highCoeff *= highGainLinear;
+    }
+
+    float calculateCoeff(float frequency) {
+        float omega = 2.0f * M_PI * frequency / sampleRate;
+        return (omega / (omega + 1.0f));
+    }
+
+    float sampleRate = 44100.0f; // Начальное значение частоты дискретизации
+    float lowCoeff = 1.0f;
+    float midCoeff = 1.0f;
+    float highCoeff = 1.0f;
+};
+/*
+int main() {
+    BaxandallEqualizer eq;
+
+    // Изменение частоты дискретизации перед первым вызовом process
+    eq.setSampleRate(48000.0f);
+
+    // Установка уровней усиления
+    eq.setLowGain(6.0f);   // Усиление низких частот на +6 дБ
+    eq.setMidGain(-6.0f);  // Ослабление средних частот на -6 дБ
+    eq.setHighGain(3.0f);  // Усиление высоких частот на +3 дБ
+
+    // Пример использования эквалайзера
+    float inputSignal = 0.5f; // Входной сигнал
+    float outputSignal = eq.process(inputSignal);
+
+    return 0;
+}
+*/
+
+/*
+class BaxandallEqualizer {
+public:
+    float lowGain;   // Уровень нижней полосы (-90 до +6 dB)
+    float midGain;   // Уровень средней полосы (-90 до +6 dB)
+    float highGain;  // Уровень верхней полосы (-90 до +6 dB)
+    float lowFrequency;  // Частота нижней полосы (Гц)
+    float highFrequency; // Частота верхней полосы (Гц)
+
+    BaxandallEqualizer() : lowGain(0), midGain(0), highGain(0), lowFrequency(100), highFrequency(20000) {
+    }
+
+    void setSampleRate(float newSampleRate) {
+        sampleRate = newSampleRate;
+    }
+
+    float process(float inputSample) {
+        // Расчет коэффициентов для фильтрации
+        float lowGainLinear = pow(10.0f, lowGain / 20.0f);
+        float midGainLinear = pow(10.0f, midGain / 20.0f);
+        float highGainLinear = pow(10.0f, highGain / 20.0f);
+
+        float lowCoeff = calculateCoeff(lowFrequency);
+        float midCoeff = calculateCoeff((lowFrequency + highFrequency) / 2.0f);
+        float highCoeff = calculateCoeff(highFrequency);
+
+        // Применение эквалайзера
+        float lowFiltered = lowCoeff * lowGainLinear * inputSample;
+        float midFiltered = midCoeff * midGainLinear * inputSample;
+        float highFiltered = highCoeff * highGainLinear * inputSample;
+
+        // Выходное значение - комбинация трех полос
+        return lowFiltered + midFiltered + highFiltered;
+    }
+
+private:
+    float calculateCoeff(float frequency) {
+        float omega = 2.0f * M_PI * frequency / sampleRate;
+        return (omega / (omega + 1.0f));
+    }
+
+    float sampleRate = 44100.0f; // Начальное значение частоты дискретизации
+};
+
+
+*/
+
+/*
+class BaxandallEqualizer {
+public:
+    float lowGain;   // Уровень нижней полосы (-90 до +6 dB)
+    float midGain;   // Уровень средней полосы (-90 до +6 dB)
+    float highGain;  // Уровень верхней полосы (-90 до +6 dB)
+    float lowFrequency;  // Частота нижней полосы (Гц)
+    float highFrequency; // Частота верхней полосы (Гц)
+
+    BaxandallEqualizer() : lowGain(0), midGain(0), highGain(0), lowFrequency(100), highFrequency(10000) {
+    }
+
+    float process(float inputSample, float sampleRate) {
+        // Расчет коэффициентов для нижней, средней и верхней полос эквалайзера
+        float lowGainLinear = pow(10.0f, lowGain / 20.0f);
+        float midGainLinear = pow(10.0f, midGain / 20.0f);
+        float highGainLinear = pow(10.0f, highGain / 20.0f);
+
+        float lowOmega = 2.0f * M_PI * lowFrequency / sampleRate;
+        float midOmega = 2.0f * M_PI * (lowFrequency + highFrequency) / (2 * sampleRate);
+        float highOmega = 2.0f * M_PI * highFrequency / sampleRate;
+
+        // Расчет коэффициентов для фильтрации
+        float lowCoeff = lowGainLinear / (1.0f + lowGainLinear);
+        float midCoeff = midGainLinear / (1.0f + midGainLinear);
+        float highCoeff = highGainLinear / (1.0f + highGainLinear);
+
+        // Применение эквалайзера
+        float lowFiltered = (1.0f - lowCoeff) * inputSample + lowCoeff * lowFilteredState;
+        float midFiltered = (1.0f - midCoeff) * inputSample + midCoeff * midFilteredState;
+        float highFiltered = (1.0f - highCoeff) * inputSample + highCoeff * highFilteredState;
+
+        // Обновление состояний фильтров
+        lowFilteredState = lowFiltered;
+        midFilteredState = midFiltered;
+        highFilteredState = highFiltered;
+
+        // Выходное значение - комбинация трех полос
+        return lowFiltered + midFiltered + highFiltered;
+    }
+
+private:
+    float lowFilteredState = 0.0f;
+    float midFilteredState = 0.0f;
+    float highFilteredState = 0.0f;
+};
+
+*/
+
+
+class Flanger {
+ public:
+  // Конструктор.
+  Flanger(float samplerate) {
+    this->samplerate = samplerate;
+    delay = 0.3;
+    depth = 0.5;
+    rate = 1;
+  }
+
+  // Устанавливает значение задержки.
+  void set_delay(float delay) {
+    this->delay = delay;
+  }
+
+  // Устанавливает значение глубины.
+  void set_depth(float depth) {
+    this->depth = depth;
+  }
+
+  // Устанавливает значение скорости изменения задержки.
+  void set_rate(float rate) {
+    this->rate = rate;
+  }
+
+  // Обрабатывает сэмпл сигнала.
+  float process(float sample) {
+    // Обновляем задержку.
+    delay += rate / samplerate;
+
+    // Вычисляем задержку в сэмплах.
+    int delay_samples = delay * samplerate;
+
+    // Создаем копию входного сигнала.
+    std::vector<float> copy = {sample};
+
+    // Применяем задержку к копии сигнала.
+    for (int i = 1; i < delay_samples; i++) {
+      copy.push_back(sample * delay);
+    }
+
+    // Смешиваем основной сигнал с задержанным сигналом.
+    float mixed = sample;
+    for (float delayed_sample : copy) {
+      mixed += delayed_sample * depth;
+    }
+
+    // Возвращаем обработанный сэмпл.
+    return mixed;
+  }
+
+ private:
+  // Частота дискретизации.
+  float samplerate;
+
+  // Задержка.
+  float delay;
+
+  // Глубина.
+  float depth;
+
+  // Скорость изменения задержки.
+  float rate;
+};
+
+
+class FlangerEffect {
+public:
+
+    int buffer_size;  // Размер буфера задержки (можно настроить)
+
+    float samplerate;
+    float depth;
+    float rate;
+    float delay;
+    float phase;
+    float buffer [96000];
+    int index;
+
+    FlangerEffect()
+    {
+
+    buffer_size = 96000;
+
+    samplerate = 48000;
+    delay = 300.0f;
+    depth = 16;
+
+    rate = 256;
+    phase = 0.0f;
+   //buffer = 0.0f
+    index = 0;
+    }
+
+    float process(float input) {
+        // Рассчитываем задержку в сэмплах
+        float delay_samples = delay * 0.001f * samplerate;
+
+        // Вычисляем значение LFO (низкочастотной осцилляции)
+//        float lfo = depth * 0.5f * (1.0f - cos(2.0f * M_PI * rate * phase));
+        float lfo = depth * (1.0f - cos(3.0f * M_PI * rate * phase));
+
+        // Обновляем фазу LFO
+        phase += 1.0f / samplerate;
+
+        // Определяем позицию для чтения из буфера с задержкой
+        int read_index = (index - static_cast<int>(delay_samples + lfo)) % buffer_size;
+        if (read_index < 0) {
+            read_index += buffer_size;
+        }
+
+        // Записываем текущий вход в буфер и считываем задержанный сэмпл
+        buffer[index] = input;
+        float output = buffer[read_index];
+
+        // Обновляем индекс
+        index = (index + 1) % buffer_size;
+
+        return output;
+    }
+
+
+};
+
 
 
 
